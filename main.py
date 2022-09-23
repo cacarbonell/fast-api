@@ -4,7 +4,7 @@ from enum import Enum
 #Pydantic
 from pydantic import BaseModel, Field
 #FastAPI
-from fastapi import FastAPI, Body, Query, Path
+from fastapi import FastAPI, Body, Query, Path, status
 
 app = FastAPI()
 
@@ -82,19 +82,29 @@ class PersonOut(PersonBase):
     pass
 
 
-@app.get("/")
+@app.get(
+    path="/",
+    status_code=status.HTTP_200_OK
+)
 def home():
     return {"Hello": "World"}
 
 # request and response body
 
-@app.post("/person/new", response_model=PersonOut)
+@app.post(
+    path="/person/new",
+    status_code=status.HTTP_201_CREATED,
+    response_model=PersonOut
+)
 def create_person(person: Person = Body(...)):
     return person
 
 # Validaciones: Query Parameters
 
-@app.get("/person/detail")
+@app.get(
+    path="/person/detail",
+    status_code=status.HTTP_200_OK
+)
 def show_person(
     name: Optional[str] = Query(
         None,
@@ -115,7 +125,10 @@ def show_person(
 
 # Validaciones: Path Parameters
 
-@app.get("/person/detail/{person_id}")
+@app.get(
+    path="/person/detail/{person_id}",
+    status_code=status.HTTP_200_OK
+)
 def show_person(
     person_id: int = Path(
         ...,
@@ -129,7 +142,10 @@ def show_person(
 
 # Validaciones: Request Body
 
-@app.put("/person/{person_id}")
+@app.put(
+    path="/person/{person_id}",
+    status_code=status.HTTP_204_NO_CONTENT
+)
 def update_person (
     person_id: int = Path(
         ...,
