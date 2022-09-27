@@ -1,9 +1,12 @@
 #Python
 from typing import Optional
 from enum import Enum
+
 #Pydantic
 from pydantic import BaseModel, Field, EmailStr
+
 #FastAPI
+from fastapi import HTTPException
 from fastapi import FastAPI, Body, Query, Path, status, Form, Header, Cookie
 from fastapi import UploadFile, File
 
@@ -106,7 +109,9 @@ def home():
     status_code=status.HTTP_201_CREATED,
     response_model=PersonOut
 )
-def create_person(person: Person = Body(...)):
+def create_person(
+    person: Person = Body(...)
+):
     return person
 
 # Validaciones: Query Parameters
@@ -135,6 +140,8 @@ def show_person(
 
 # Validaciones: Path Parameters
 
+persons = [1, 2, 3, 4, 5]
+
 @app.get(
     path="/person/detail/{person_id}",
     status_code=status.HTTP_200_OK
@@ -148,6 +155,11 @@ def show_person(
         example=45
     )
 ):
+    if person_id not in persons:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="¡This person doesn't exist!"
+        )
     return {person_id: "It exists!"}
 
 # Validaciones: Request Body
