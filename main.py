@@ -109,11 +109,26 @@ def home():
     path="/person/new",
     status_code=status.HTTP_201_CREATED,
     response_model=PersonOut,
-    tags=["Persons"]
+    tags=["Persons"],
+    summary="Create Person in the app"
 )
 def create_person(
     person: Person = Body(...)
 ):
+    """
+    Create Person
+
+    This path operation create a person in the app and save
+    the information in the database
+    
+    Parameters:
+    - Request body parameter:
+        - **person: Person** -> A person model with first name, last name, age,
+        hair color, marital status and password
+
+    Returns a person model with first name, last name, age,
+    hair color and marital status
+    """
     return person
 
 # Validaciones: Query Parameters
@@ -121,7 +136,8 @@ def create_person(
 @app.get(
     path="/person/detail",
     status_code=status.HTTP_200_OK,
-    tags=["Persons"]
+    tags=["Persons"],
+    summary="Show name and age the user"
 )
 def show_person(
     name: Optional[str] = Query(
@@ -139,6 +155,19 @@ def show_person(
         example=45
     )
 ):
+    """
+    Show Person
+
+
+    This path operation show a person the name and age 
+    
+    Parameters:
+    - Request body parameter:
+        - **name: Optional[str]** -> The name the person
+        - **age: str** -> The age the person
+
+    Returns a dict with key name and value age
+    """
     return {name: age}
 
 # Validaciones: Path Parameters
@@ -148,7 +177,8 @@ persons = [1, 2, 3, 4, 5]
 @app.get(
     path="/person/detail/{person_id}",
     status_code=status.HTTP_200_OK,
-    tags=["Persons"]
+    tags=["Persons"],
+    summary="Show person for id"
 )
 def show_person(
     person_id: int = Path(
@@ -159,6 +189,17 @@ def show_person(
         example=45
     )
 ):
+    """
+     Show Person ID
+
+    This path operation show a person for id
+    
+    Parameters:
+    - Request body parameter:
+        - **person_di: int** -> ID the person
+
+    Returns a dict with key id and value message 
+    """
     if person_id not in persons:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -171,7 +212,8 @@ def show_person(
 @app.put(
     path="/person/{person_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    tags=["Persons"]
+    tags=["Persons"],
+    summary="Update person in app"
 )
 def update_person (
     person_id: int = Path(
@@ -187,7 +229,20 @@ def update_person (
     location: Location = Body(
         ...
     )
-): 
+):
+    """
+     Update Person
+
+    This path operation update the person with ID 
+    
+    Parameters:
+    - Request body parameter:
+        - **person_id: int** -> ID person
+        - **person: Person** -> A person model
+        - ***location: Location** -> A location model
+
+    Returns a dict concatenated with person model and location model
+    """
     results = person.dict()
     results.update(location.dict())
     return results
@@ -198,7 +253,8 @@ def update_person (
     path="/login",
     response_model=LoginOut,
     status_code=status.HTTP_200_OK,
-    tags=["Persons"]
+    tags=["Persons"],
+    summary="Login in the app"
 )
 def login(
     username: str = Form(
@@ -208,6 +264,18 @@ def login(
         ...
     )
 ):
+    """
+    Login
+
+    This path operation login a person in the app 
+    
+    Parameters:
+    - Request body parameter:
+        - **username: str** -> The username the person
+        - **password: str** -> The password the person
+
+    Returns a dict with key username and value username
+    """
     return LoginOut(username=username)
 
 # cookies and headers parameters
@@ -215,7 +283,8 @@ def login(
 @app.post(
     path="/contact",
     status_code=status.HTTP_200_OK,
-    tags=["Forms"]
+    tags=["Forms"],
+    summary="Contact Form"
 )
 def contact(
     first_name: str = Form(
@@ -236,19 +305,48 @@ def contact(
     user_agent: Optional[str] = Header(default=None),
     ads: Optional[str] = Cookie(default=None)
 ):
+    """
+    Contact
+
+    This path operation create a contact with first name, last name, email,
+    message, user agent and ads the cookie 
+    
+    Parameters:
+    - Request body parameter:
+        - **first_name: str** -> The first name the person
+        - **last_name: str** -> The last name the person
+        - **email: EmailStr** -> Email the person
+        - **message: str** -> Message that send person
+        - **user_agent: Optional[str]** -> To know the user
+        - **ads: Optional[str]** -> The store cookie in the machine the user
+
+    Returns a the user
+    """
     return user_agent
 
 # Files
 
 @app.post(
     path="/post-image",
-    tags=["File"]
+    tags=["File"],
+    summary="File the store in the app"
 )
 def post_image(
     image: UploadFile = File(
         ...,
     )
 ):
+    """
+    Post Image
+
+    This path operation store file type image
+    
+    Parameters:
+    - Request body parameter:
+        - **image: UploadFile** -> File uploaded by the user
+
+    Returns a dict file name, file type and file size
+    """
     return {
         "Filename": image.filename,
         "Format":image.content_type,
